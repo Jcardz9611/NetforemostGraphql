@@ -14,6 +14,7 @@ const main = async () => {
         username: 'root',
         password: 'password',
         logging: true,
+        //Edta propiedad se debe setear a falso una vez que se guarde la entidad, borrar y al crear entidad nueva volver a crear.
         synchronize: true,
         entities: [Users]
     }).initialize();

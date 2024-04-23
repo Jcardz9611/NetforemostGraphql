@@ -34,26 +34,63 @@ export const UPDATE_USER = {
     async resolve(parent: any, args: any) {
         const { id, name, username } = args;
 
-        const user = await Users.findOneBy({ id: id })
+        try {
+            // Busca el usuario por su ID
+            const user = await Users.findOneBy({ id: id });
 
-        if (!user) {
-            throw new Error("Username doesn't exist")
-        } else {
-            await Users.update({ name: name }, { username: username })
-            return args;
+            if (!user) {
+                throw new Error("User not found");
+            }
+
+            // Actualiza el nombre y el nombre de usuario del usuario encontrado
+            user.name = name;
+            user.username = username;
+
+            // Guarda los cambios en la base de datos
+            await user.save();
+
+            // Devuelve el usuario actualizado
+            return user;
+        } catch (error: any) {
+            throw new Error(`Error updating user: ${error.message}`);
         }
     }
-}
+};
 
 
 //Se define metodo para borrar usuario en graphql
 export const DELETE_USER = {
     type: UserType,
     args: {
-        id: { type: GraphQLInt }
+        id: { type: GraphQLID }
     },
     async resolve(parent: any, args: any) {
         const id = args.id;
         await Users.delete(id)
-    }
+
+        return args.id
+    },
 }
+
+export const LOGIN_USER = {
+    type: UserType,
+    args: {
+        email: { type: GraphQLString },
+        password: { type: GraphQLString },
+    },
+    async resolve(parent: any, args: any) {
+        const { email, password } = args;
+
+        const user = await Users.findOne({ where: { email } });
+
+        if (!user) {
+            throw new Error('Usuario no encontrado');
+        }
+
+        if (user.password !== password) {
+            throw new Error('Contraseña incorrecta');
+        }
+
+        return user;
+    },
+};

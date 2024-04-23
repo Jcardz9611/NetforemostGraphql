@@ -1,6 +1,6 @@
-import { GraphQLID, GraphQLList } from 'graphql';
-import { Users } from '../../Entities/User';
+import { GraphQLID, GraphQLList, GraphQLString, GraphQLNonNull } from 'graphql';
 import { UserType } from '../TypeDefs/Users';
+import { Users } from '../../Entities/User'; // Importa el modelo de usuario
 
 export const GET_ALL_USERS = {
     type: new GraphQLList(UserType),
@@ -8,7 +8,6 @@ export const GET_ALL_USERS = {
         return Users.find();
     }
 }
-
 
 export const GET_USER = {
     type: UserType,
@@ -20,7 +19,7 @@ export const GET_USER = {
         return Users.findOne({ where: { id } }).then((user) => {
             return user || null;
         }).catch((error) => {
-            throw new Error(`Error fetching user: ${error.message}`)
-        })
+            throw new Error(`Error fetching user: ${error.message}`);
+        });
     },
 }
